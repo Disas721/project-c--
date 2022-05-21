@@ -1,31 +1,39 @@
-﻿#include <iostream>
-#include <cstdlib>
-#include <cmath>
+﻿#pragma once
+
 #include <vector>
+#include <utility>
+#include <functional>
+#include <stdexcept>
 
-#pragma once
 
-class QueueElement {
-  public:
-    int _value;
-    int _key;
-
-    QueueElement(int value, int key);
+struct EmptyQueueException : std::runtime_error {
+    EmptyQueueException(const std::string &msg);
 };
 
-class Queue {
-  private:
-    std::vector< QueueElement > _queue;
+template<typename T, typename Cmp = std::greater<T> >
+struct Queue {
     
+    Queue(Cmp cmp);
+    Queue();
+
+    T top() const;
+    void pop();
+    void push(T value);
+    
+    void clear();
+
+    std::size_t size() const;
+    bool empty() const;
+
+private:
+    Cmp cmp;
+    std::vector<T> heap;
+
     void siftUp(int index);
-
     void siftDown(int index);
-  
-  public:
-    void insert(int value, int key);
 
-    int extractMax();
-
-    void show();
-
+    template<typename Q, typename Cmprtr>
+    friend std::ostream &operator<<(std::ostream &, const Queue<Q, Cmprtr> &);
 };
+
+#include "queue_impl.hpp"
